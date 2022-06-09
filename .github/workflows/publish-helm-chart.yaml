@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+    inputs:
+      chart_path:
+        type: string
+        required: true
+      charts_repo_name:
+        type: string
+        required: true
+    secrets:
+      chartmuseum_endpoint:
+        required: true
+      chartmuseum_username:
+        required: true
+      chartmuseum_password:
+        required: true
+
+jobs:
+  publish-chart:
+    name: Publish Helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Helm
+        uses: mamezou-tech/setup-helmfile@v0.9.0
+
+      - name: Authenticate with Chartmuseum
+        run: helm repo add ${{ inputs.charts_repo_name }} ${{ secrets.chartmuseum_endpoint }} --username ${{ secrets.chartmuseum_username }} --password ${{ secrets.chartmuseum_password }}
+
+      - name: Install CM-Push Plugin
+        run: helm plugin install https://github.com/chartmuseum/helm-push
+
+      - name: Lint
+        run: helm lint ${{ inputs.chart_path }}
+
+      - name: Push Chart
+        run: helm cm-push --force ${{ inputs.chart_path }} ${{ inputs.charts_repo_name }}
