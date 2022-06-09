@@ -32,6 +32,9 @@ jobs:
       - name: Install CM-Push Plugin
         run: helm plugin install https://github.com/chartmuseum/helm-push
 
+      - name: Update Dependencies
+        run: helm dependency update ${{ inputs.chart_path }}
+
       - name: Lint
         run: helm lint ${{ inputs.chart_path }}
 
