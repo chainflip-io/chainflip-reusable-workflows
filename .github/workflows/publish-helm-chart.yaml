@@ -9,13 +9,10 @@ on:
         required: true
     secrets:
       chartmuseum_endpoint:
-        type: string
         required: true
       chartmuseum_username:
-        type: string
         required: true
       chartmuseum_password:
-        type: string
         required: true
 
 jobs:
